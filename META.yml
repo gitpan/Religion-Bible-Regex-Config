@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Religion-Bible-Regex-Config
-version:             v0.2
+version:             v0.5
 abstract:            Creates a configuration object for the Religion::Bible::Regex objects from a YAML file.
 license:             ~
 author:              
@@ -8,6 +8,7 @@ author:
 generated_by:        ExtUtils::MakeMaker version 6.42
 distribution_type:   module
 requires:     
+    Perl::Critic:                  0
     Test::Base:                    0
     Test::Deep:                    0
     Test::More:                    0

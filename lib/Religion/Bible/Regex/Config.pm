@@ -4,18 +4,16 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.2');
+use version; our $VERSION = qv('0.5');
 
 use YAML::Loader;
-use Data::Dumper;
 
 # Input files are assumed to be in the UTF-8 strict character encoding.
-use utf8;
-
+#use utf8;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 
 sub new {
-	my $class = shift;
+    my $class = shift;
     my $self = {};
     my $config = shift;
 
@@ -25,7 +23,7 @@ sub new {
 
     # If $config is a file that exists
     # Crud method for testing that this is not YAML --> m/\n/ == 0
-    if (m/\n/ == 0 && -e $config) {
+    if ($config =~ m/\n/ == 0 && -e $config) {
         $self->{config} = $self->_read_yaml_file($config);
     } else {
        my $yaml_loader = YAML::Loader->new();
@@ -41,25 +39,40 @@ sub get {
 
     my $ret = $self->{config};
     foreach my $key (@keys) {
-        carp "Configuration not found: {$key}" unless defined($ret->{$key});
+#        carp "Configuration not found: {$key}" unless defined($ret->{$key});
         $ret = $ret->{$key};
     }
     return $ret;
 }
 
-sub get_reference {
-	my $self = shift;
-	return $self->{'config'}{'reference'}; 
+sub get_or_undef {
+    my $self = shift;
+    my @keys = @_;
+
+    my $ret = $self->{config};
+    foreach my $key (@keys) {
+        return unless defined($ret->{$key});
+        $ret = $ret->{$key};
+    }
+    return $ret;
 }
 
-sub get_regex {
-	my $self = shift;
-	return $self->{'config'}{'regex'}; 
+
+# These getter functions are very important to have right.
+sub get_bookname_configurations {
+	return shift->{'config'}{'books'}; 
 }
 
-sub get_versification {
-	my $self = shift;
-	return $self->{'config'}{'versification'}; 
+sub get_search_configurations {
+	return shift->{'config'}{'regex'}; 
+}
+
+sub get_formatting_configurations {
+	return shift->{'config'}{'reference'};
+}
+
+sub get_versification_configurations {
+	return shift->{'config'}{'versification'}; 
 }
 
 sub _read_yaml_file {
@@ -126,18 +139,23 @@ Returns a configuration string
 
 Returns a hash of all configurations
 
-=head2 get_reference
+=head2 get_formatting_configurations
 
 Returns a hash of the reference configurations
 
-=head2 get_regex
+=head2 get_search_configurations
 
 Returns a hash of the regex configurations
 
-=head2 get_versification
+=head2 get_versification_configurations
 
 Returns a hash of the versification configurations
 
+=head2 get_bookname_configurations
+
+Returns a hash of the bookname configurations
+
+=head2 get_or_undef
 
 =head1 DIAGNOSTICS
 
@@ -183,26 +201,3 @@ Copyright (c) 2009, Daniel Holmlund C<< <holmlund.dev@gmail.com> >>. All rights 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.
 
-
-=head1 DISCLAIMER OF WARRANTY
-
-BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
-FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
-OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
-PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
-EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
-ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
-YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
-NECESSARY SERVICING, REPAIR, OR CORRECTION.
-
-IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
-WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
-REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
-LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
-OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
-THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
-RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
-FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
-SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGES.
