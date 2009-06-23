@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Religion-Bible-Regex-Config
-version:             v0.5
+version:             v0.51
 abstract:            Creates a configuration object for the Religion::Bible::Regex objects from a YAML file.
 license:             ~
 author:              
