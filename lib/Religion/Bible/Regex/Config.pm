@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = '0.6';
+use version; our $VERSION = '0.61';
 
 use YAML::Loader;
 
